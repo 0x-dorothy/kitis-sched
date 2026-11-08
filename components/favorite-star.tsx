@@ -4,6 +4,7 @@
 
 import { useFavorites } from "@/lib/favorites";
 import type { ScheduleType } from "@/lib/types";
+import { haptic } from "@/lib/telegram";
 import { IconStar } from "./icons";
 
 export function FavoriteStar({
@@ -24,7 +25,10 @@ export function FavoriteStar({
     <button
       className="icon-btn"
       style={{ color: active ? "var(--accent)" : "var(--faint)", width: 30, height: 30 }}
-      onClick={() => void toggle(type, id, label)}
+      onClick={() => {
+        haptic("light");
+        void toggle(type, id, label);
+      }}
       aria-label={active ? "Убрать из избранного" : "В избранное"}
       aria-pressed={active}
       title={active ? "Убрать из избранного" : "В избранное"}
