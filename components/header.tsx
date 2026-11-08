@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeMenu, useTheme } from "@/lib/theme";
+import { BASE_PATH } from "@/lib/base-path";
 import { StatusPill } from "./status-pill";
 import {
   IconBell,
@@ -40,13 +40,12 @@ export function Header() {
       >
         <div className="mx-auto flex h-14 w-full max-w-[1120px] items-center gap-5 px-4 md:px-6">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="КИТиС — на главную">
-            <Image
-              src="/kitis-logo-96.png"
-              alt=""
+            <img
+              src={`${BASE_PATH}/kitis-logo-96.png`}
+              alt="КИТиС"
               width={28}
               height={24}
               className="h-6 w-auto"
-              priority
             />
             <span className="flex flex-col leading-none">
               <span className="text-[14.5px] font-extrabold tracking-tight">КИТиС</span>
