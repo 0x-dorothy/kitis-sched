@@ -25,7 +25,7 @@
 - Парсер: cheerio + TextDecoder(windows-1251) — только на сервере (у источника нет CORS)
 - БД (опционально): Postgres (Neon) — аккаунты, избранное в облаке, архив недель
 - Авторизация: bcryptjs + JWT (jose) в httpOnly-cookie
-- Деплой: Vercel + ежедневный cron-снапшот
+- Деплой: Vercel + GitBook + ежедневный cron-снапшот (Github Actions)
 
 
 ## Telegram (Mini App)
