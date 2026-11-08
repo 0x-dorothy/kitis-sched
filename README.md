@@ -27,15 +27,6 @@
 - Авторизация: bcryptjs + JWT (jose) в httpOnly-cookie
 - Деплой: Vercel + ежедневный cron-снапшот
 
-## Запуск локально
-
-```bash
-npm install
-npm run dev
-# http://localhost:3000
-```
-
-Без переменных окружения всё работает в «лёгком» режиме (без аккаунтов и архива).
 
 ## Telegram (Mini App)
 
@@ -43,7 +34,6 @@ npm run dev
 (SDK лежит локально в `public/telegram-web-app.js`, тема и кнопка «назад» подхватываются автоматически).
 
 Уведомления о новых неделях:
-- секрет `TELEGRAM_BOT_TOKEN` — токен бота;
 - переменная `TELEGRAM_CHAT_ID` — заполняется сама после первого `/start`
   (воркфлоу `telegram.yml` опрашивает бота каждые 5 минут);
 - отправка — шаг «Notify Telegram» в `snapshot.yml`, только когда данные реально изменились.
@@ -53,31 +43,6 @@ npm run dev
 Каждая неделя, пока она актуальна, сохраняется в `public/data/archive/{id}/{week}.json`
 (до 12 недель). Прошлые недели открываются стрелками ←, будущие показывают,
 что расписание ещё не опубликовано на сайте колледжа.
-
-## Деплой на Render (бесплатно, работает из РФ)
-
-Проект уже подготовлен: `render.yaml` + эндпоинт `/api/health`.
-
-1. Залейте репозиторий на GitHub (публичный).
-2. На [render.com](https://render.com) → **New → Blueprint** → выберите репозиторий → **Apply**. Render сам соберёт (`npm ci && npm run build`) и запустит (`npm run start`).
-3. Получите адрес вида `https://kitis-sched.onrender.com`.
-4. Бесплатный инстанс засыпает через 15 минут без запросов (холодный старт 30–60 с). Чтобы не засыпал: [uptimerobot.com](https://uptimerobot.com) → **Add New Monitor** → HTTP(s) → URL `https://kitis-sched.onrender.com/api/health` → интервал **5 минут**. Бесплатного тарифа хватает (50 мониторов).
-
-Лимиты free-плана Render: 750 часов инстанса в месяц (24/7 — это 744 ч, впритык), 100 ГБ трафика, сон после простоя.
-
-## Деплой на Vercel (если доступен)
-
-
-```bash
-npx vercel deploy --prod --yes
-```
-
-Проект: `kitis-sched` (домен `kitis-sched.vercel.app`).
-Для аккаунтов и архива добавьте переменные окружения:
-
-- `DATABASE_URL` — Postgres (Neon, бесплатный тариф), создаётся в Vercel → Storage;
-- `AUTH_SECRET` — случайная строка для подписи сессий;
-- `CRON_SECRET` — токен для `/api/cron/sync` (Vercel Cron подставит сам).
 
 ## Архитектура
 
@@ -96,11 +61,6 @@ components/
 app/api/
   directory · schedule · auth/* · favorites · cron/sync
 ```
-
-## Контакты преподавателей
-
-`data/teachers-contacts.json` — ключ это ФИО как на сайте-источнике (например, `Шевченко П.С.`),
-внутри: полное ФИО, роль, `curatorOf`, email, телефон, кабинет.
 
 ## Источник данных
 
