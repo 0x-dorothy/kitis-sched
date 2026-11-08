@@ -7,7 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { EntityPicker } from "@/components/entity-picker";
 import { ScheduleView } from "@/components/schedule-view";
 import { FavoriteStar } from "@/components/favorite-star";
-import type { Directory, ScheduleResponse, ScheduleType } from "@/lib/types";
+import { fetchDirectory, fetchSchedule, type DirectoryData } from "@/lib/data-client";
+import type { ScheduleResponse, ScheduleType } from "@/lib/types";
 import { SCHEDULE_TYPES } from "@/lib/types";
 import { addDays, currentWeekStart, weekRange, weekRelationLabel } from "@/lib/weeks";
 import { IconChevronLeft, IconChevronRight, IconGrid, IconList } from "@/components/icons";
@@ -42,7 +43,7 @@ function SchedulePageInner() {
   const id = params.get("id") ?? (type === "group" ? "cg95" : type === "teacher" ? "cp131" : "ca106");
   const week = params.get("week") ?? "";
 
-  const [dir, setDir] = useState<Directory | null>(null);
+  const [dir, setDir] = useState<DirectoryData | null>(null);
   const [data, setData] = useState<ScheduleResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,9 +61,8 @@ function SchedulePageInner() {
   };
 
   useEffect(() => {
-    fetch("/api/directory")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setDir(d))
+    fetchDirectory()
+      .then(setDir)
       .catch(() => {});
   }, []);
 
@@ -70,13 +70,15 @@ function SchedulePageInner() {
     setLoading(true);
     setError(null);
     try {
-      const url = `/api/schedule?type=${type}&id=${id}${week ? `&week=${week}` : ""}`;
-      const res = await fetch(url, { cache: "no-store" });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.message ?? "Не удалось загрузить расписание");
+      const json = await fetchSchedule(type, id, week || undefined);
       setData(json);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка загрузки");
+      const message = e instanceof Error ? e.message : "";
+      setError(
+        message === "week-not-found"
+          ? "Эта неделя не сохранена в архиве."
+          : "Не удалось загрузить расписание."
+      );
       setData(null);
     } finally {
       setLoading(false);
@@ -200,19 +202,13 @@ function SchedulePageInner() {
             {error}
           </p>
           <p className="m-0 mt-1.5 text-[12px]" style={{ color: "var(--muted)" }}>
-            Прошлые недели хранятся в архиве и появляются после подключения базы данных
-            (инструкция в README). Текущая неделя всегда доступна с сайта колледжа.
+            Данные обновляются автоматически несколько раз в час. Прошлые недели
+            подтягиваются из архива — он пополняется с момента запуска сайта.
           </p>
         </div>
       )}
 
       {!loading && schedule && <ScheduleView schedule={schedule} view={view} />}
-
-      {!loading && schedule && schedule.days.length === 0 && (
-        <p className="text-[13px]" style={{ color: "var(--muted)" }}>
-          На эту неделю занятий нет.
-        </p>
-      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { EntityRef } from "@/lib/types";
 import { FavoriteStar } from "@/components/favorite-star";
 import { IconMail, IconPhone, IconSearch } from "@/components/icons";
+import { fetchDirectory } from "@/lib/data-client";
 import contacts from "@/data/teachers-contacts.json";
 
 interface Contact {
@@ -30,8 +31,7 @@ export default function TeachersPage() {
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    fetch("/api/directory")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
+    fetchDirectory()
       .then((d) => setTeachers(d.teachers ?? []))
       .catch(() => setError(true));
   }, []);

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/theme";
-import { AuthProvider } from "@/lib/auth-context";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s · КИТиС",
   },
   description:
-    "Расписание занятий Колледжа информационных технологий и строительства: группы, преподаватели, аудитории, звонки. Источник — официальный сайт расписания.",
+    "Расписание занятий Колледжа информационных технологий и строительства: группы, преподаватели, аудитории, звонки.",
   applicationName: "КИТиС · расписание",
 };
 
@@ -36,13 +35,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" data-preset="mono" suppressHydrationWarning>
       <body className={`${manrope.variable} min-h-screen antialiased`}>
         <ThemeProvider>
-          <AuthProvider>
-            <Header />
-            <main className="mx-auto w-full max-w-[1120px] px-4 pb-24 pt-5 md:px-6 md:pb-10">
-              {children}
-            </main>
-            <Footer />
-          </AuthProvider>
+          <Header />
+          <main className="mx-auto w-full max-w-[1120px] px-4 pb-24 pt-5 md:px-6 md:pb-10">
+            {children}
+          </main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

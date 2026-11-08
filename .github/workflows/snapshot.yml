@@ -1,0 +1,43 @@
+name: Update schedule data
+
+on:
+  schedule:
+    # каждые 30 минут; источник публикует новую неделю чт–сб, этого с запасом
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: snapshot
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Snapshot
+        run: npm run snapshot
+
+      - name: Commit data
+        run: |
+          git config user.name "kitis-bot"
+          git config user.email "kitis-bot@users.noreply.github.com"
+          git add public/data
+          if git diff --cached --quiet; then
+            echo "изменений нет"
+          else
+            git commit -m "data: обновление расписания"
+            git push
+          fi

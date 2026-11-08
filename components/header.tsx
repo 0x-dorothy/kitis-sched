@@ -3,17 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { ThemeMenu } from "@/lib/theme";
-import { useAuth } from "@/lib/auth-context";
+import { ThemeMenu, useTheme } from "@/lib/theme";
 import { StatusPill } from "./status-pill";
 import {
   IconBell,
   IconCalendar,
   IconCompare,
   IconHome,
-  IconLogout,
-  IconUser,
+  IconStar,
   IconUsers,
 } from "./icons";
 
@@ -27,20 +24,8 @@ const NAV = [
 
 export function Header() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => setMenuOpen(false), [pathname]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [menuOpen]);
+  const { resolved } = useTheme();
+  void resolved;
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
@@ -65,7 +50,10 @@ export function Header() {
             />
             <span className="flex flex-col leading-none">
               <span className="text-[14.5px] font-extrabold tracking-tight">КИТиС</span>
-              <span className="mt-0.5 text-[9.5px] font-semibold uppercase tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+              <span
+                className="mt-0.5 text-[9.5px] font-semibold uppercase tracking-[0.16em]"
+                style={{ color: "var(--faint)" }}
+              >
                 расписание
               </span>
             </span>
@@ -98,58 +86,19 @@ export function Header() {
             <Link href="/bells" className="inline-flex md:hidden" aria-label="Текущая пара">
               <StatusPill showLabel={false} />
             </Link>
+            <Link
+              href="/profile"
+              className="icon-btn"
+              aria-label="Избранное и оформление"
+              title="Избранное и оформление"
+            >
+              <IconStar size={16} />
+            </Link>
             <ThemeMenu />
-            {user ? (
-              <div className="relative" ref={menuRef}>
-                <button
-                  className="flex h-8 items-center gap-2 rounded-md border px-1.5"
-                  style={{ borderColor: "var(--border)" }}
-                  onClick={() => setMenuOpen((v) => !v)}
-                  aria-label="Профиль"
-                  aria-expanded={menuOpen}
-                >
-                  <span
-                    className="grid h-5 w-5 place-items-center rounded-full text-[10px] font-bold"
-                    style={{ background: "var(--accent)", color: "var(--accent-ink)" }}
-                  >
-                    {(user.name || user.email).slice(0, 1).toUpperCase()}
-                  </span>
-                  <span className="hidden max-w-28 truncate text-[12.5px] font-semibold sm:inline">
-                    {user.name || user.email}
-                  </span>
-                </button>
-                {menuOpen && (
-                  <div
-                    className="absolute right-0 top-10 w-52 rounded-xl border p-1"
-                    style={{ background: "var(--surface)", borderColor: "var(--border)", boxShadow: "var(--shadow-pop)" }}
-                  >
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] font-semibold"
-                      style={{ color: "var(--text)" }}
-                    >
-                      <IconUser size={15} /> Профиль и избранное
-                    </Link>
-                    <button
-                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] font-semibold"
-                      style={{ color: "var(--warn)" }}
-                      onClick={() => void logout()}
-                    >
-                      <IconLogout size={15} /> Выйти
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link href="/login" className="btn btn-sm">
-                Войти
-              </Link>
-            )}
           </div>
         </div>
       </header>
 
-      {/* Мобильная нижняя навигация */}
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t md:hidden"
         style={{

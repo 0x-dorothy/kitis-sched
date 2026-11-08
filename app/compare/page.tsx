@@ -9,6 +9,7 @@ import type { Directory, ScheduleType, WeekSchedule } from "@/lib/types";
 import { SCHEDULE_TYPES } from "@/lib/types";
 import { slotsForWeekday, WEEKDAY_LABELS } from "@/lib/bells";
 import { currentWeekStart, formatRuDate, weekRange } from "@/lib/weeks";
+import { fetchDirectory, fetchSchedule, type DirectoryData } from "@/lib/data-client";
 import { IconX } from "@/components/icons";
 
 interface Column {
@@ -31,7 +32,7 @@ function loadColumns(): Column[] {
 }
 
 export default function ComparePage() {
-  const [dir, setDir] = useState<Directory | null>(null);
+  const [dir, setDir] = useState<DirectoryData | null>(null);
   const [columns, setColumns] = useState<Column[]>([]);
   const [schedules, setSchedules] = useState<Record<string, WeekSchedule>>({});
   const [loading, setLoading] = useState(true);
@@ -46,9 +47,8 @@ export default function ComparePage() {
   }, [columns]);
 
   useEffect(() => {
-    fetch("/api/directory")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d && setDir(d))
+    fetchDirectory()
+      .then(setDir)
       .catch(() => {});
   }, []);
 
@@ -63,11 +63,8 @@ export default function ComparePage() {
     await Promise.all(
       cols.map(async (c) => {
         try {
-          const res = await fetch(`/api/schedule?type=${c.type}&id=${c.id}`, { cache: "no-store" });
-          if (res.ok) {
-            const json = await res.json();
-            results[c.id] = json.schedule;
-          }
+          const json = await fetchSchedule(c.type, c.id);
+          results[c.id] = json.schedule;
         } catch {}
       })
     );
