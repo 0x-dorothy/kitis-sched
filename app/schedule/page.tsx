@@ -98,6 +98,14 @@ function SchedulePageInner() {
   );
 
   const schedule = data?.schedule;
+  const entityList = dir
+    ? type === "group"
+      ? dir.groups
+      : type === "teacher"
+        ? dir.teachers
+        : dir.rooms
+    : [];
+  const entityTitle = schedule ? titleText(schedule) : entityList.find((e) => e.id === id)?.name ?? id;
   const liveWeek = schedule?.weekStart ?? "";
   const showingWeek = week || liveWeek;
   const prevWeek = showingWeek ? addDays(showingWeek, -7) : "";
@@ -117,9 +125,9 @@ function SchedulePageInner() {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
         <span className="tag">{typeLabel}</span>
         <h1 className="m-0 text-[20px] font-extrabold leading-tight tracking-tight md:text-[22px]">
-          {schedule ? titleText(schedule) : "…"}
+          {entityTitle}
         </h1>
-        {schedule && <FavoriteStar type={type} id={id} label={titleText(schedule)} />}
+        {schedule && <FavoriteStar type={type} id={id} label={entityTitle} />}
         {data?.archived && <span className="tag">архив</span>}
         {schedule?.updatedAt && (
           <span className="mono ml-auto hidden text-[11px] md:inline" style={{ color: "var(--faint)" }}>
