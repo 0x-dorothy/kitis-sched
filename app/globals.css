@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Дизайн-система «КИТиС · расписание»
+   Принципы: монохром, волосяные линии 1px, табличная типографика,
+   маленькие радиусы, точечный акцент. Никаких градиентов и свечения.
+   ============================================================ */
+
+:root {
+  --radius: 10px;
+  --radius-sm: 7px;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+/* ---------- Палитра: светлая / тёмная через light-dark() ---------- */
+
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(#f7f6f3, #0e0f10);
+  --surface: light-dark(#ffffff, #141517);
+  --surface-2: light-dark(#f1efe9, #1a1c1e);
+  --surface-3: light-dark(#e9e6dd, #202225);
+  --border: light-dark(#e4e0d7, #24262a);
+  --border-strong: light-dark(#cbc5b7, #34373c);
+  --text: light-dark(#1a1b17, #eceae5);
+  --muted: light-dark(#6d6a61, #98968f);
+  --faint: light-dark(#949084, #6f6e68);
+  --ok: light-dark(#2c7a4b, #62c08d);
+  --warn: light-dark(#a35a15, #d59a4e);
+  --shadow-pop: 0 10px 30px rgb(0 0 0 / 0.18), 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+/* Явный выбор пользователя переопределяет системную схему */
+:root[data-scheme="light"] { color-scheme: only light; }
+:root[data-scheme="dark"] { color-scheme: only dark; }
+
+/* ---------- Пресеты акцента ---------- */
+
+/* Монохром: чернила на светлом, тёплое золото на тёмном */
+:root[data-preset="mono"] {
+  --accent: light-dark(#1a1b17, #d7b46a);
+  --accent-ink: light-dark(#f8f7f4, #17150f);
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+}
+
+/* Классика сайта-источника и логотипа: синий / оранжевый / жёлтый */
+:root[data-preset="classic"] {
+  --accent: light-dark(#1f4e79, #84a9cd);
+  --accent-ink: light-dark(#f7f9fc, #0d1117);
+  --accent-2: light-dark(#c2410c, #f08c00);
+  --accent-3: light-dark(#a16207, #ffc400);
+}
+
+/* Свой цвет: --accent и --accent-ink выставляет JS инлайн-стилем */
+:root[data-preset="custom"] {
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+}
+
+:root {
+  --accent-2: var(--accent);
+  --accent-3: var(--accent);
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+  --accent-line: color-mix(in srgb, var(--accent) 38%, var(--border));
+  --ok-soft: color-mix(in srgb, var(--ok) 12%, transparent);
+  --warn-soft: color-mix(in srgb, var(--warn) 12%, transparent);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* ---------- Базовое ---------- */
+
+* { border-color: var(--border); }
+
+html { background: var(--bg); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--accent-soft); color: var(--text); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Тонкий скроллбар */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { height: 8px; width: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- Типографика ---------- */
+
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.num { font-variant-numeric: tabular-nums; }
+
+.h-page { font-size: clamp(22px, 3.2vw, 30px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.h-section { font-size: 13px; font-weight: 700; }
+.overline {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--faint);
+}
+
+/* ---------- Поверхности ---------- */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.panel-flat { background: transparent; border-radius: 0; }
+
+.hairline { border-top: 1px solid var(--border); }
+
+/* ---------- Кнопки ---------- */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 34px; padding: 0 12px;
+  font-size: 13px; font-weight: 600; line-height: 1; white-space: nowrap;
+  color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; user-select: none;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn svg { width: 15px; height: 15px; }
+
+.btn-primary {
+  background: var(--accent); border-color: var(--accent); color: var(--accent-ink);
+}
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--text));
+  border-color: color-mix(in srgb, var(--accent) 88%, var(--text));
+}
+
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--text); border-color: transparent; }
+
+.btn-sm { height: 28px; padding: 0 9px; font-size: 12px; border-radius: 6px; }
+.btn-sm svg { width: 13px; height: 13px; }
+
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: 34px; height: 34px; padding: 0;
+  color: var(--muted); background: transparent;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  cursor: pointer; transition: background .12s, color .12s, border-color .12s;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn svg { width: 17px; height: 17px; }
+
+/* ---------- Поля ---------- */
+
+.input {
+  width: 100%; height: 34px; padding: 0 11px;
+  font-size: 13.5px; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  outline: none; transition: border-color .12s, box-shadow .12s;
+}
+.input::placeholder { color: var(--faint); }
+.input:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.label { display: block; margin-bottom: 5px; font-size: 11.5px; font-weight: 600; color: var(--muted); }
+
+textarea.input { height: auto; padding: 9px 11px; resize: vertical; }
+
+/* ---------- Сегменты ---------- */
+
+.seg {
+  display: inline-flex; padding: 2px; gap: 2px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+}
+.seg-btn {
+  height: 28px; padding: 0 11px;
+  font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  color: var(--muted); background: transparent; border: none; border-radius: 6px;
+  cursor: pointer; transition: color .12s, background .12s;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn.is-active { background: light-dark(#ffffff, var(--surface-3)); color: var(--text); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
+
+/* ---------- Метки и ссылки ---------- */
+
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 20px; padding: 0 6px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 4px; white-space: nowrap;
+}
+.tag-accent { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-line); }
+.tag-ok { color: var(--ok); background: var(--ok-soft); border-color: color-mix(in srgb, var(--ok) 30%, var(--border)); }
+
+.meta-link {
+  color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--border-strong);
+  transition: color .12s, border-color .12s;
+}
+.meta-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Классическая тема: аудитории — оранжевые, преподаватели — жёлто-золотые */
+[data-preset="classic"] .meta-link[data-kind="room"] { color: var(--accent-2); }
+[data-preset="classic"] .meta-link[data-kind="teacher"] { color: var(--accent-3); }
+[data-preset="classic"] .meta-link[data-kind="room"]:hover { color: var(--accent-2); border-bottom-color: var(--accent-2); }
+[data-preset="classic"] .meta-link[data-kind="teacher"]:hover { color: var(--accent-3); border-bottom-color: var(--accent-3); }
+
+.link { color: var(--text); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; }
+.link:hover { text-decoration-color: var(--accent); color: var(--accent); }
+
+/* ---------- Статус «сейчас» ---------- */
+
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); display: inline-block; }
+.dot-pulse { animation: dot-pulse 2.4s ease-in-out infinite; }
+@keyframes dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.status-strip {
+  display: flex; align-items: center; gap: 10px;
+  height: 30px; padding: 0 10px;
+  font-size: 12px; color: var(--muted);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+  white-space: nowrap;
+}
+.status-strip b { color: var(--text); font-weight: 650; }
+
+/* ---------- Расписание: доска ---------- */
+
+.board { border-top: 1px solid var(--border); }
+.board-row { display: contents; }
+
+.lesson {
+  position: relative;
+  padding: 8px 10px 9px;
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  min-height: 58px;
+  background: var(--surface);
+}
+.lesson:first-child { border-left: 0; }
+.lesson-now {
+  background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.lesson-subject { font-size: 13px; font-weight: 650; line-height: 1.3; letter-spacing: -0.005em; }
+.lesson-meta { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 11.5px; color: var(--muted); }
+.lesson-meta .mono { font-size: 11px; color: var(--faint); }
+
+/* ---------- Анимации появления ---------- */
+
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .28s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .dot-pulse { animation: none !important; }
+  * { transition: none !important; }
+}
