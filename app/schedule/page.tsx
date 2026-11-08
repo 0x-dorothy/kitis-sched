@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { EntityPicker } from "@/components/entity-picker";
 import { ScheduleView } from "@/components/schedule-view";
 import { FavoriteStar } from "@/components/favorite-star";
-import { fetchDirectory, fetchSchedule, type DirectoryData } from "@/lib/data-client";
+import { fetchDirectory, fetchSchedule, ScheduleError, type DirectoryData } from "@/lib/data-client";
 import type { ScheduleResponse, ScheduleType } from "@/lib/types";
 import { SCHEDULE_TYPES } from "@/lib/types";
 import { addDays, currentWeekStart, weekRange, weekRelationLabel } from "@/lib/weeks";
@@ -45,7 +45,7 @@ function SchedulePageInner() {
 
   const [dir, setDir] = useState<DirectoryData | null>(null);
   const [data, setData] = useState<ScheduleResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<"not-published" | "not-archived" | "no-data" | "other" | null>(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>("board");
 
@@ -73,12 +73,8 @@ function SchedulePageInner() {
       const json = await fetchSchedule(type, id, week || undefined);
       setData(json);
     } catch (e) {
-      const message = e instanceof Error ? e.message : "";
-      setError(
-        message === "week-not-found"
-          ? "Эта неделя не сохранена в архиве."
-          : "Не удалось загрузить расписание."
-      );
+      if (e instanceof ScheduleError) setError(e.kind);
+      else setError("other");
       setData(null);
     } finally {
       setLoading(false);
@@ -198,12 +194,16 @@ function SchedulePageInner() {
 
       {!loading && error && (
         <div className="panel p-5">
-          <p className="m-0 text-[13.5px] font-semibold" style={{ color: "var(--warn)" }}>
-            {error}
+          <p className="m-0 text-[13.5px] font-semibold" style={{ color: error === "not-published" ? "var(--muted)" : "var(--warn)" }}>
+            {error === "not-published" && "Расписание на эту неделю ещё не опубликовано на сайте колледжа."}
+            {error === "not-archived" && "Этой недели нет в архиве."}
+            {error === "no-data" && "Данные ещё не собраны."}
+            {error === "other" && "Не удалось загрузить расписание."}
           </p>
           <p className="m-0 mt-1.5 text-[12px]" style={{ color: "var(--muted)" }}>
-            Данные обновляются автоматически несколько раз в час. Прошлые недели
-            подтягиваются из архива — он пополняется с момента запуска сайта.
+            {error === "not-published"
+              ? "Источник публикует новую неделю обычно в четверг–субботу. Как только она появится, сайт подхватит её автоматически в течение получаса."
+              : "Архив ведётся автоматически: каждая прошедшая неделя сохраняется и открывается по стрелкам ←."}
           </p>
         </div>
       )}
