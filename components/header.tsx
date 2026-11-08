@@ -47,7 +47,7 @@ export function Header() {
               height={24}
               className="h-6 w-auto"
             />
-            <span className="flex flex-col leading-none">
+            <span className="hidden min-[360px]:flex flex-col leading-none">
               <span className="text-[14.5px] font-extrabold tracking-tight">КИТиС</span>
               <span
                 className="mt-0.5 text-[9.5px] font-semibold uppercase tracking-[0.16em]"
