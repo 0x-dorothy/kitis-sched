@@ -83,10 +83,8 @@ async function main() {
 
       await writeJson(path.join(SCHEDULES, `${ref.id}.json`), schedule satisfies WeekSchedule);
 
-      // Архив — только для групп, чтобы не раздувать репозиторий.
-      if (kind === "group") {
-        await saveArchive(schedule);
-      }
+      // Архив: каждая неделя сохраняется отдельным файлом (≈4 КБ на сущность).
+      await saveArchive(schedule);
     } catch (e) {
       failures.push(`${ref.id}: ${e instanceof Error ? e.message : "error"}`);
     } finally {
