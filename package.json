@@ -10,7 +10,6 @@
     "build": "next build",
     "build:static": "next build",
     "snapshot": "tsx scripts/snapshot.ts",
-    "notify": "tsx scripts/notify.ts",
     "start": "next start",
     "lint": "eslint"
   },
