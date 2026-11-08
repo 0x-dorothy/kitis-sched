@@ -52,7 +52,7 @@ export interface WeekMeta {
 
 export interface ScheduleResponse {
   schedule: WeekSchedule;
-  /** Недели, доступные в архиве для этой сущности (требуется БД) */
+  /** Недели, доступные в архиве для этой сущности */
   availableWeeks: WeekMeta[];
   /** true — данные из архива, false — живой парсинг источника */
   archived: boolean;
